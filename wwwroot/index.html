@@ -91,15 +91,26 @@
     }
   </style>
   <script>
+    function isWhitespace(char) {
+      return /\s/.test(char);
+    }
+
     function alternateCaps() {
       var startsWithCapital = document.getElementById('capitalCheckbox').checked;
       var input = document.getElementById('textInput').value;
       var result = '';
+      var j = 0;
       for (var i = 0; i < input.length; i++) {
-        if (startsWithCapital) {
-          result += i % 2 === 0 ? input[i].toUpperCase() : input[i].toLowerCase();
+        let c = input[i];
+        if (isWhitespace(c)) {
+          result += c;
         } else {
-          result += i % 2 === 0 ? input[i].toLowerCase() : input[i].toUpperCase();
+          if (startsWithCapital) {
+            result += i % 2 === 0 ? c.toUpperCase() : c.toLowerCase();
+          } else {
+            result += i % 2 === 0 ? c.toLowerCase() : c.toUpperCase();
+          }
+          j++;
         }
       }
       document.getElementById('textOutput').value = result;
