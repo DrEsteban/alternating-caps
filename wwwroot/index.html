@@ -18,7 +18,7 @@
       padding: 10px 0;
       margin-bottom: 20px;
     }
-    input, button, label, .checkbox {
+    input, button {
       margin: 10px 0;
       padding: 10px;
       border: 1px solid #ddd;
@@ -34,55 +34,41 @@
     button:hover {
       background-color: #45a049;
     }
-    .checkbox {
-      display: block;
-      position: relative;
-      padding-left: 35px;
-      margin-bottom: 12px;
-      cursor: pointer;
-      font-size: 22px;
+    .checkbox-container {
+      margin: 0 0 20px 0;
+    }
+    .checkbox-label {
+      font-size: 16px;
       user-select: none;
-      width: auto;
-      border: none;
     }
-    .checkbox input {
+    .checkbox {
+      width: 20px;
+      height: 20px;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    .inputBox {
+      max-width: 500px;
+    }
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      width: 30%;
+    }
+    .tooltip .tooltiptext {
+      width: 120px;
+      background-color: black;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px 0;
       position: absolute;
+      z-index: 1;
+      bottom: 100%;
+      left: 50%;
       opacity: 0;
-      cursor: pointer;
-      height: 0;
-      width: 0;
-    }
-    .checkmark {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 25px;
-      width: 25px;
-      background-color: #eee;
-      border-radius: 50%;
-    }
-    .checkbox:hover input ~ .checkmark {
-      background-color: #ccc;
-    }
-    .checkbox input:checked ~ .checkmark {
-      background-color: #4CAF50;
-    }
-    .checkmark:after {
-      content: "";
-      position: absolute;
-      display: none;
-    }
-    .checkbox input:checked ~ .checkmark:after {
-      display: block;
-    }
-    .checkbox .checkmark:after {
-      left: 9px;
-      top: 5px;
-      width: 8px;
-      height: 13px;
-      border: solid white;
-      border-width: 0 3px 3px 0;
-      transform: rotate(45deg);
+      margin-left: -60px;
+      transition: opacity 0.3s;
     }
     @media (max-width: 600px) {
       input, button, label {
@@ -106,9 +92,9 @@
           result += c;
         } else {
           if (startsWithCapital) {
-            result += i % 2 === 0 ? c.toUpperCase() : c.toLowerCase();
+            result += j % 2 === 0 ? c.toUpperCase() : c.toLowerCase();
           } else {
-            result += i % 2 === 0 ? c.toLowerCase() : c.toUpperCase();
+            result += j % 2 === 0 ? c.toLowerCase() : c.toUpperCase();
           }
           j++;
         }
@@ -120,6 +106,11 @@
       var copyText = document.getElementById('textOutput');
       copyText.select();
       document.execCommand('copy');
+      var tooltip = document.getElementById('myTooltip');
+      tooltip.style.opacity = 1;
+      setTimeout(function(){
+        tooltip.style.opacity = 0;
+      }, 2000); 
     }
   </script>
 </head>
@@ -127,12 +118,17 @@
   <header>
     <h1>Alternate Caps Converter</h1>
   </header>
-  <label class="checkbox">Start with capital:
-    <input type="checkbox" id="capitalCheckbox" onchange="alternateCaps()">
-    <span class="checkmark"></span>
-  </label>
-  <input type="text" id="textInput" oninput="alternateCaps()" placeholder="Enter text here">
+  <input type="text" id="textInput" class="inputBox" oninput="alternateCaps()" placeholder="Enter text here">
+  <div class="checkbox-container">
+    <label class="checkbox-label">
+      Start with capital:
+      <input type="checkbox" id="capitalCheckbox" class="checkbox" onchange="alternateCaps()">
+    </label>
+  </div>
   <input type="text" id="textOutput" placeholder="Result" readonly disabled>
-  <button onclick="copyToClipboard()">Copy to Clipboard</button>
+  <div class="tooltip">
+    <button onclick="copyToClipboard()">Copy to Clipboard</button>
+    <span class="tooltiptext" id="myTooltip">Copied!</span>
+  </div>
 </body>
 </html>
