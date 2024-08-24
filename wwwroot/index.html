@@ -41,11 +41,22 @@
     }
   </style>
   <script>
+    function isWhitespace(char) {
+      return /\s/.test(char);
+    }
+
     function alternateCaps() {
       var input = document.getElementById('textInput').value;
       var result = '';
+      var j = 0;
       for (var i = 0; i < input.length; i++) {
-        result += i % 2 === 0 ? input[i].toLowerCase() : input[i].toUpperCase();
+        let c = input[i];
+        if (isWhitespace(c)) {
+          result += c;
+        } else {
+          result += j % 2 === 0 ? c.toLowerCase() : c.toUpperCase();
+          j++;
+        }
       }
       document.getElementById('textOutput').value = result;
     }
@@ -62,7 +73,7 @@
     <h1>Alternate Caps Converter</h1>
   </header>
   <input type="text" id="textInput" oninput="alternateCaps()" placeholder="Enter text here">
-  <input type="text" id="textOutput" placeholder="Result" readonly>
+  <input type="text" id="textOutput" placeholder="Result" readonly disabled>
   <button onclick="copyToClipboard()">Copy to Clipboard</button>
 </body>
 </html>
