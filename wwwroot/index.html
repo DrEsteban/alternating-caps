@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alternate Caps Converter</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f7f7f7;
+      text-align: center;
+    }
+    header {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 0;
+      margin-bottom: 20px;
+    }
+    input, button {
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      width: 80%;
+      max-width: 300px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    @media (max-width: 600px) {
+      input, button {
+        width: 95%;
+      }
+    }
+  </style>
+  <script>
+    function alternateCaps() {
+      var input = document.getElementById('textInput').value;
+      var result = '';
+      for (var i = 0; i < input.length; i++) {
+        result += i % 2 === 0 ? input[i].toLowerCase() : input[i].toUpperCase();
+      }
+      document.getElementById('textOutput').value = result;
+    }
+    
+    function copyToClipboard() {
+      var copyText = document.getElementById('textOutput');
+      copyText.select();
+      document.execCommand('copy');
+    }
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Alternate Caps Converter</h1>
+  </header>
+  <input type="text" id="textInput" oninput="alternateCaps()" placeholder="Enter text here">
+  <input type="text" id="textOutput" placeholder="Result" readonly>
+  <button onclick="copyToClipboard()">Copy to Clipboard</button>
+</body>
+</html>
