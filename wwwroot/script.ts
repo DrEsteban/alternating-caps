@@ -14,16 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function alternateCaps(): void {
   if (capitalCheckbox.checked) {
-    capitalCheckbox.disabled = false;
     randomnessCheckbox.checked = false;
-    randomnessCheckbox.disabled = true;
   } else if (randomnessCheckbox.checked) {
-    randomnessCheckbox.disabled = false
     capitalCheckbox.checked = false;
-    capitalCheckbox.disabled = true;
-  } else {
-    capitalCheckbox.disabled = false;
-    randomnessCheckbox.disabled = false;
   }
 
   const introduceRandomness = randomnessCheckbox.checked;
