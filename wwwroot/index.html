@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alternate Caps Converter</title>
+  <title>Alternating Caps Converter</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -40,6 +41,11 @@
     .checkbox-label {
       font-size: 16px;
       user-select: none;
+      margin: auto;
+      width: 50%;
+    }
+    .checkbox-label + .checkbox-label {
+      margin-left: 10px;
     }
     .checkbox {
       width: 20px;
@@ -70,53 +76,29 @@
       margin-left: -60px;
       transition: opacity 0.3s;
     }
+    #randomOptions {
+      margin: -20px 0 20px 0;
+    }
+    .randomOptions input[type='number'] {
+      width: 50px;
+      margin: 0 5px;
+    }
+    #regenerateButton {
+      margin-left: 10px;
+      width: 100px;
+    }
     @media (max-width: 600px) {
       input, button, label {
         width: 95%;
       }
     }
   </style>
-  <script>
-    function isWhitespace(char) {
-      return /\s/.test(char);
-    }
-
-    function alternateCaps() {
-      var startsWithCapital = document.getElementById('capitalCheckbox').checked;
-      var input = document.getElementById('textInput').value;
-      var result = '';
-      var j = 0;
-      for (var i = 0; i < input.length; i++) {
-        let c = input[i];
-        if (isWhitespace(c)) {
-          result += c;
-        } else {
-          if (startsWithCapital) {
-            result += j % 2 === 0 ? c.toUpperCase() : c.toLowerCase();
-          } else {
-            result += j % 2 === 0 ? c.toLowerCase() : c.toUpperCase();
-          }
-          j++;
-        }
-      }
-      document.getElementById('textOutput').value = result;
-    }
-    
-    function copyToClipboard() {
-      var copyText = document.getElementById('textOutput');
-      copyText.select();
-      document.execCommand('copy');
-      var tooltip = document.getElementById('myTooltip');
-      tooltip.style.opacity = 1;
-      setTimeout(function(){
-        tooltip.style.opacity = 0;
-      }, 2000); 
-    }
-  </script>
+  
+  <script type="text/javascript" src="/script.js"></script>
 </head>
 <body>
   <header>
-    <h1>Alternate Caps Converter</h1>
+    <h1>Alternating Caps Converter</h1>
   </header>
   <input type="text" id="textInput" class="inputBox" oninput="alternateCaps()" placeholder="Enter text here">
   <div class="checkbox-container">
@@ -124,8 +106,18 @@
       Start with capital:
       <input type="checkbox" id="capitalCheckbox" class="checkbox" onchange="alternateCaps()">
     </label>
+    <label class="checkbox-label">
+      Random errors:
+      <input type="checkbox" id="randomnessCheckbox" class="checkbox" onchange="alternateCaps()">
+    </label>
+  </div>
+  <div id="randomOptions" class="randomOptions" hidden>
+    <label for="randomRatio">Error chance:</label>
+    <input type="number" id="randomRatio" min="0" max="100" step="5" value="15" onchange="alternateCaps()">
+    <label for="randomRatio">%</label>
   </div>
   <input type="text" id="textOutput" placeholder="Result" readonly>
+  <button id="regenerateButton" onclick="alternateCaps()" hidden>Regenerate</button>
   <div class="tooltip">
     <button onclick="copyToClipboard()">Copy to Clipboard</button>
     <span class="tooltiptext" id="myTooltip">Copied!</span>
