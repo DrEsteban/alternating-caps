@@ -1,101 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alternating Caps Converter</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f7f7f7;
-      text-align: center;
-    }
-    header {
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px 0;
-      margin-bottom: 20px;
-    }
-    input, button {
-      margin: 10px 0;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      width: 80%;
-      max-width: 300px;
-    }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    .checkbox-container {
-      margin: 0 0 20px 0;
-    }
-    .checkbox-label {
-      font-size: 16px;
-      user-select: none;
-      margin: auto;
-      width: 50%;
-    }
-    .checkbox-label + .checkbox-label {
-      margin-left: 10px;
-    }
-    .checkbox {
-      width: 20px;
-      height: 20px;
-      margin-left: 10px;
-      vertical-align: middle;
-    }
-    .inputBox {
-      max-width: 500px;
-    }
-    .tooltip {
-      position: relative;
-      display: inline-block;
-      width: 200px;
-    }
-    .tooltip .tooltiptext {
-      width: 120px;
-      background-color: black;
-      color: #fff;
-      text-align: center;
-      border-radius: 6px;
-      padding: 5px 0;
-      position: absolute;
-      z-index: 1;
-      bottom: 100%;
-      left: 50%;
-      opacity: 0;
-      margin-left: -60px;
-      transition: opacity 0.3s;
-    }
-    #randomOptions {
-      margin: -20px 0 20px 0;
-    }
-    .randomOptions input[type='number'] {
-      width: 50px;
-      margin: 0 5px;
-    }
-    #regenerateButton {
-      margin-left: 10px;
-      width: 100px;
-    }
-    @media (max-width: 600px) {
-      input, button, label {
-        width: 95%;
-      }
-    }
-  </style>
-  
+  <link rel="stylesheet" type="text/css" href="/style.css">
   <script type="text/javascript" src="/script.js"></script>
 </head>
+
 <body>
   <header>
     <h1>Alternating Caps Converter</h1>
@@ -104,23 +18,24 @@
   <div class="checkbox-container">
     <label class="checkbox-label">
       Start with capital:
-      <input type="checkbox" id="capitalCheckbox" class="checkbox" onchange="alternateCaps()">
+      <input type="checkbox" id="capitalCheckbox" class="checkbox" onchange="checkboxChanged(this)">
     </label>
     <label class="checkbox-label">
       Random errors:
-      <input type="checkbox" id="randomnessCheckbox" class="checkbox" onchange="alternateCaps()">
+      <input type="checkbox" id="randomnessCheckbox" class="checkbox" onchange="checkboxChanged(this)">
     </label>
   </div>
   <div id="randomOptions" class="randomOptions" hidden>
     <label for="randomRatio">Error chance:</label>
-    <input type="number" id="randomRatio" min="0" max="100" step="5" value="15" onchange="alternateCaps()">
+    <input type="number" id="randomRatio" min="0" max="100" step="5" value="15" onchange="randomRatioChanged()">
     <label for="randomRatio">%</label>
   </div>
   <input type="text" id="textOutput" placeholder="Result" readonly>
   <button id="regenerateButton" onclick="alternateCaps()" hidden>Regenerate</button>
   <div class="tooltip">
     <button onclick="copyToClipboard()">Copy to Clipboard</button>
-    <span class="tooltiptext" id="myTooltip">Copied!</span>
+    <span class="tooltiptext" id="tooltip">Copied!</span>
   </div>
 </body>
+
 </html>

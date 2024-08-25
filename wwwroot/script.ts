@@ -4,6 +4,8 @@ var regenerateButton: HTMLButtonElement;
 var randomOptionsDiv: HTMLDivElement;
 var inputTextBox: HTMLInputElement;
 var randomRatioBox: HTMLInputElement;
+var outputTextBox: HTMLInputElement;
+var tooltip: HTMLSpanElement;
 
 document.addEventListener('DOMContentLoaded', () => {
   capitalCheckbox = document.getElementById('capitalCheckbox') as HTMLInputElement;
@@ -12,18 +14,18 @@ document.addEventListener('DOMContentLoaded', () => {
   randomOptionsDiv = document.getElementById('randomOptions') as HTMLDivElement;
   inputTextBox = document.getElementById('textInput') as HTMLInputElement;
   randomRatioBox = document.getElementById('randomRatio') as HTMLInputElement;
+  outputTextBox = document.getElementById('textOutput') as HTMLInputElement;
+  tooltip = document.getElementById('tooltip') as HTMLSpanElement;
 });
 
 function alternateCaps(): void {
-  if (capitalCheckbox.checked) {
-    randomnessCheckbox.checked = false;
-  } else if (randomnessCheckbox.checked) {
-    capitalCheckbox.checked = false;
-  }
-
   const introduceRandomness = randomnessCheckbox.checked;
+  // Hide the random options if randomness is not selected
   regenerateButton.hidden = !introduceRandomness;
   randomOptionsDiv.hidden = !introduceRandomness;
+
+  // Using 'let' instead of 'const' because the value of 'startWithCapital' can change 
+  // based on the randomness checkbox
   let startWithCapital = capitalCheckbox.checked;
   const input = inputTextBox.value;
   let result = '';
@@ -31,6 +33,7 @@ function alternateCaps(): void {
   for (let i = 0; i < input.length; i++) {
     const c = input[i];
     if (isWhitespace(c)) {
+      // Don't increment counter when whitespace is encountered
       result += c;
     } else {
       if (introduceRandomness) {
@@ -42,18 +45,22 @@ function alternateCaps(): void {
         }
         const randomnessRatio = randomVal / 100;
         if (Math.random() < randomnessRatio) {
+          // Flip the value of 'startWithCapital' based on randomness
           startWithCapital = !startWithCapital;
         }
       }
-      if (startWithCapital) {
-        result += j % 2 === 0 ? c.toUpperCase() : c.toLowerCase();
-      } else {
-        result += j % 2 === 0 ? c.toLowerCase() : c.toUpperCase();
-      }
+
+      // Alternate between upper and lower case based on the value of 'startWithCapital'
+      result += (j % 2 === 0) === startWithCapital ? c.toUpperCase() : c.toLowerCase();
+      // if (startWithCapital) {
+      //   result += j % 2 === 0 ? c.toUpperCase() : c.toLowerCase();
+      // } else {
+      //   result += j % 2 === 0 ? c.toLowerCase() : c.toUpperCase();
+      // }
       j++;
     }
   }
-  (document.getElementById('textOutput') as HTMLInputElement).value = result;
+  outputTextBox.value = result;
 }
 
 function isWhitespace(char: string): boolean {
@@ -61,12 +68,33 @@ function isWhitespace(char: string): boolean {
 }
 
 async function copyToClipboard(): Promise<void> {
-  const copyText = document.getElementById('textOutput') as HTMLInputElement;
-  copyText.select();
-  await navigator.clipboard.writeText(copyText.value);
-  const tooltip = document.getElementById('myTooltip') as HTMLElement;
+  outputTextBox.select();
+  await navigator.clipboard.writeText(outputTextBox.value);
   tooltip.style.opacity = '1';
   setTimeout(() => {
     tooltip.style.opacity = '0';
   }, 2000);
+}
+
+// Ensure only one of the checkboxes can be checked at a time
+function checkboxChanged(el: HTMLInputElement): void {
+  const other = el === capitalCheckbox ? randomnessCheckbox : capitalCheckbox;
+  if (el.checked) {
+    other.checked = false;
+  }
+  alternateCaps();
+}
+
+// Ensure the random ratio is between 0 and 100
+function randomRatioChanged(): void {
+  if (!randomRatioBox.value) {
+    randomRatioBox.value = '15';
+  }
+  const val = parseInt(randomRatioBox.value);
+  if (val > 100) {
+    randomRatioBox.value = '100';
+  } else if (val < 0) {
+    randomRatioBox.value = '0';
+  }
+  alternateCaps();
 }
