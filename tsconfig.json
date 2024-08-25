@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES5",
-    "lib": ["ES2015", "DOM"],
+    "target": "ES2023",
+    "lib": ["ES2023", "DOM"],
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "removeComments": true
   },
   "include": ["wwwroot/*"]
 }
