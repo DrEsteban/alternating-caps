@@ -3,6 +3,7 @@ var randomnessCheckbox: HTMLInputElement;
 var regenerateButton: HTMLButtonElement;
 var randomOptionsDiv: HTMLDivElement;
 var inputTextBox: HTMLInputElement;
+var randomRatioBox: HTMLInputElement;
 
 document.addEventListener('DOMContentLoaded', () => {
   capitalCheckbox = document.getElementById('capitalCheckbox') as HTMLInputElement;
@@ -10,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   regenerateButton = document.getElementById('regenerateButton') as HTMLButtonElement;
   randomOptionsDiv = document.getElementById('randomOptions') as HTMLDivElement;
   inputTextBox = document.getElementById('textInput') as HTMLInputElement;
+  randomRatioBox = document.getElementById('randomRatio') as HTMLInputElement;
 });
 
 function alternateCaps(): void {
@@ -32,7 +34,13 @@ function alternateCaps(): void {
       result += c;
     } else {
       if (introduceRandomness) {
-        const randomnessRatio = parseInt((document.getElementById('randomRatio') as HTMLInputElement).value) / 100;
+        const randomVal = parseInt(randomRatioBox.value);
+        if (randomVal > 100) {
+          randomRatioBox.value = '100';
+        } else if (randomVal < 0) {
+          randomRatioBox.value = '0';
+        }
+        const randomnessRatio = randomVal / 100;
         if (Math.random() < randomnessRatio) {
           startWithCapital = !startWithCapital;
         }
