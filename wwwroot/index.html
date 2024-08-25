@@ -30,11 +30,13 @@
     <input type="number" id="randomRatio" min="0" max="100" step="5" value="15" onchange="randomRatioChanged()">
     <label for="randomRatio">%</label>
   </div>
-  <textarea id="textOutput" class="outputBox" placeholder="Result" readonly></textarea>
-  <button id="regenerateButton" onclick="alternateCaps()" hidden>Regenerate</button>
+  <button id="regenerateButton" onclick="alternateCaps()" hidden>&darr; Regenerate &darr;</button>
   <div class="tooltip">
-    <button onclick="copyToClipboard()">Copy to Clipboard</button>
+    <button onclick="copyToClipboard()">&darr; Copy to Clipboard &darr;</button>
     <span class="tooltiptext" id="tooltip">Copied!</span>
+  </div>
+  <div>
+    <textarea id="textOutput" class="inputBox" placeholder="Result" readonly></textarea>
   </div>
 </body>
 

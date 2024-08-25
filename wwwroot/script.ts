@@ -67,11 +67,13 @@ function isWhitespace(char: string): boolean {
   return /\s/.test(char);
 }
 
+var timeoutHandle: number | undefined;
 async function copyToClipboard(): Promise<void> {
   outputTextBox.select();
   await navigator.clipboard.writeText(outputTextBox.value);
   tooltip.style.opacity = '1';
-  setTimeout(() => {
+  clearTimeout(timeoutHandle);
+  timeoutHandle = setTimeout(() => {
     tooltip.style.opacity = '0';
   }, 2000);
 }
