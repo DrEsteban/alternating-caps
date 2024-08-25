@@ -13,7 +13,12 @@ header {
     margin-bottom: 20px;
 }
 
+textarea {
+    font-family: 'Arial', sans-serif;
+}
+
 input,
+textarea,
 button {
     margin: 10px 0;
     padding: 10px;
@@ -57,12 +62,22 @@ button:hover {
 
 .inputBox {
     max-width: 500px;
+    min-width: 500px;
+    height: 100px;
+    min-height: 15px;
+}
+
+.outputBox {
+    min-width: 300px;
+    min-height: 15px;
+    height: 50px;
 }
 
 .tooltip {
     position: relative;
     display: inline-block;
     width: 200px;
+    vertical-align: top;
 }
 
 .tooltip .tooltiptext {
@@ -93,6 +108,7 @@ button:hover {
 #regenerateButton {
     margin-left: 10px;
     width: 100px;
+    vertical-align: top;
 }
 
 @media (max-width: 600px) {
