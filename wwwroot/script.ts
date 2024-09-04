@@ -32,7 +32,7 @@ function alternateCaps(): void {
   let j = 0;
   for (let i = 0; i < input.length; i++) {
     const c = input[i];
-    if (isWhitespace(c)) {
+    if (!isLetter(c)) {
       // Don't increment counter when whitespace is encountered
       result += c;
     } else {
@@ -63,8 +63,8 @@ function alternateCaps(): void {
   outputTextBox.value = result;
 }
 
-function isWhitespace(char: string): boolean {
-  return /\s/.test(char);
+function isLetter(char: string): boolean {
+  return /[a-zA-Z]/.test(char);
 }
 
 var timeoutHandle: number | undefined;
