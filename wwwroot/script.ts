@@ -1,5 +1,5 @@
 const version = '1.0.0';
-const settingsName = `settings-${version}`;
+const settingsStorageName = `settings-${version}`;
 
 var capitalCheckbox: HTMLInputElement;
 var randomnessCheckbox: HTMLInputElement;
@@ -10,6 +10,12 @@ var randomRatioBox: HTMLInputElement;
 var outputTextBox: HTMLInputElement;
 var tooltip: HTMLSpanElement;
 
+type Settings = {
+  capital: boolean,
+  randomness: boolean,
+  randomRatio: string
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   capitalCheckbox = document.getElementById('capitalCheckbox') as HTMLInputElement;
   randomnessCheckbox = document.getElementById('randomnessCheckbox') as HTMLInputElement;
@@ -19,9 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
   randomRatioBox = document.getElementById('randomRatio') as HTMLInputElement;
   outputTextBox = document.getElementById('textOutput') as HTMLInputElement;
   tooltip = document.getElementById('tooltip') as HTMLSpanElement;
-  const settings = localStorage.getItem(settingsName);
+  const settings = localStorage.getItem(settingsStorageName);
   if (settings) {
-    const parsedSettings = JSON.parse(settings);
+    const parsedSettings: Settings = JSON.parse(settings);
     capitalCheckbox.checked = parsedSettings.capital;
     randomnessCheckbox.checked = parsedSettings.randomness;
     randomRatioBox.value = parsedSettings.randomRatio;
@@ -74,12 +80,12 @@ function alternateCaps(): void {
 }
 
 function saveSettings(): void {
-  const settings = {
+  const settings: Settings = {
     capital: capitalCheckbox.checked,
     randomness: randomnessCheckbox.checked,
     randomRatio: randomRatioBox.value
   };
-  localStorage.setItem(settingsName, JSON.stringify(settings));
+  localStorage.setItem(settingsStorageName, JSON.stringify(settings));
 }
 
 function isLetter(char: string): boolean {
