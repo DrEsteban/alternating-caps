@@ -1,3 +1,6 @@
+const version = '1.0.0';
+const settingsName = `settings-${version}`;
+
 var capitalCheckbox: HTMLInputElement;
 var randomnessCheckbox: HTMLInputElement;
 var regenerateButton: HTMLButtonElement;
@@ -16,6 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
   randomRatioBox = document.getElementById('randomRatio') as HTMLInputElement;
   outputTextBox = document.getElementById('textOutput') as HTMLInputElement;
   tooltip = document.getElementById('tooltip') as HTMLSpanElement;
+  const settings = localStorage.getItem(settingsName);
+  if (settings) {
+    const parsedSettings = JSON.parse(settings);
+    capitalCheckbox.checked = parsedSettings.capital;
+    randomnessCheckbox.checked = parsedSettings.randomness;
+    randomRatioBox.value = parsedSettings.randomRatio;
+  }
 });
 
 function alternateCaps(): void {
@@ -63,6 +73,15 @@ function alternateCaps(): void {
   outputTextBox.value = result;
 }
 
+function saveSettings(): void {
+  const settings = {
+    capital: capitalCheckbox.checked,
+    randomness: randomnessCheckbox.checked,
+    randomRatio: randomRatioBox.value
+  };
+  localStorage.setItem(settingsName, JSON.stringify(settings));
+}
+
 function isLetter(char: string): boolean {
   return /[a-zA-Z]/.test(char);
 }
@@ -84,6 +103,7 @@ function checkboxChanged(el: HTMLInputElement): void {
   if (el.checked) {
     other.checked = false;
   }
+  saveSettings();
   alternateCaps();
 }
 
@@ -98,5 +118,6 @@ function randomRatioChanged(): void {
   } else if (val < 0) {
     randomRatioBox.value = '0';
   }
+  saveSettings();
   alternateCaps();
 }
