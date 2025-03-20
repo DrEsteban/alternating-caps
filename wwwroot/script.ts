@@ -52,7 +52,8 @@ function alternateCaps(): void {
       // Don't increment counter when whitespace is encountered
       result += c;
     } else {
-      if (introduceRandomness) {
+      if (!(i === 0 && startWithCapital) && // only introduce randomness on first iteration if not startWithCapital
+          introduceRandomness) {
         const randomVal = parseInt(randomRatioBox.value);
         if (randomVal > 100) {
           randomRatioBox.value = '100';
@@ -103,12 +104,7 @@ async function copyToClipboard(): Promise<void> {
   }, 2000);
 }
 
-// Ensure only one of the checkboxes can be checked at a time
 function checkboxChanged(el: HTMLInputElement): void {
-  const other = el === capitalCheckbox ? randomnessCheckbox : capitalCheckbox;
-  if (el.checked) {
-    other.checked = false;
-  }
   saveSettings();
   alternateCaps();
 }
