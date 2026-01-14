@@ -81,12 +81,8 @@ self.addEventListener('fetch', (event) => {
       })
     );
 
-    return networkResponsePromise;
-  });
-
-  event.respondWith(
-    responsePromise.then(async (response) => {
-      if (!response) {
+    return networkResponsePromise.then(async (networkResponse) => {
+      if (!networkResponse) {
         if (event.request.mode === 'navigate') {
           const fallback = await caches.match(INDEX_CACHE_PATH);
           if (fallback) {
@@ -94,13 +90,15 @@ self.addEventListener('fetch', (event) => {
           }
         }
 
-        return new Response('Offline', {
+        return new Response('This content is not available offline.', {
           status: 503,
           statusText: 'Offline'
         });
       }
 
-      return response;
-    })
-  );
+      return networkResponse;
+    });
+  });
+
+  event.respondWith(responsePromise);
 });
