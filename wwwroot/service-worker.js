@@ -63,24 +63,28 @@ self.addEventListener('fetch', (event) => {
       return cachedResponse;
     }
 
-    return fetch(event.request).catch(() => undefined);
+    return fetch(event.request).catch((error) => {
+      console.error('Fetch failed for request:', event.request.url, error);
+      return undefined;
+    });
   });
 
-  event.waitUntil(
-    responsePromise.then((response) => {
-      if (
-        !servedFromCache &&
-        response &&
-        response.status === 200 &&
-        response.type === 'basic'
-      ) {
-        return caches
-          .open(CACHE_NAME)
-          .then((cache) => cache.put(event.request, response.clone()));
-      }
-      return undefined;
-    })
-  );
+  const cacheUpdatePromise = responsePromise.then((response) => {
+    if (
+      !servedFromCache &&
+      response &&
+      response.status === 200 &&
+      response.type === 'basic'
+    ) {
+      const responseClone = response.clone();
+      return caches
+        .open(CACHE_NAME)
+        .then((cache) => cache.put(event.request, responseClone));
+    }
+    return undefined;
+  });
+
+  event.waitUntil(cacheUpdatePromise);
 
   event.respondWith(
     responsePromise.then((response) => {
@@ -88,7 +92,7 @@ self.addEventListener('fetch', (event) => {
         return caches.match(INDEX_CACHE_PATH);
       }
 
-      return response;
+      return response || Response.error();
     })
   );
 });
