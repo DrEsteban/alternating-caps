@@ -10,6 +10,12 @@ const ASSETS_TO_CACHE = [
   `${APP_BASE}icon-192.png`,
   `${APP_BASE}icon-512.png`
 ];
+const CACHE_PATHS = ASSETS_TO_CACHE.map(
+  (asset) => new URL(asset, self.location.origin).pathname
+);
+const INDEX_CACHE_PATH =
+  CACHE_PATHS.find((path) => path.endsWith('index.html')) ||
+  `${APP_BASE}index.html`;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -43,7 +49,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   const shouldHandleRequest =
     event.request.mode === 'navigate' ||
-    ASSETS_TO_CACHE.includes(url.pathname);
+    CACHE_PATHS.includes(url.pathname);
 
   if (!shouldHandleRequest) {
     return;
@@ -79,7 +85,7 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     responsePromise.then((response) => {
       if (!response && event.request.mode === 'navigate') {
-        return caches.match(`${APP_BASE}index.html`);
+        return caches.match(INDEX_CACHE_PATH);
       }
 
       return response;
