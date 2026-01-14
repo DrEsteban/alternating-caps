@@ -85,19 +85,22 @@ self.addEventListener('fetch', (event) => {
   });
 
   event.respondWith(
-    responsePromise.then((response) => {
-      if (!response && event.request.mode === 'navigate') {
-        return caches.match(INDEX_CACHE_PATH).then(
-          (fallback) =>
-            fallback ||
-            new Response('Offline', {
-              status: 503,
-              statusText: 'Offline'
-            })
-        );
+    responsePromise.then(async (response) => {
+      if (!response) {
+        if (event.request.mode === 'navigate') {
+          const fallback = await caches.match(INDEX_CACHE_PATH);
+          if (fallback) {
+            return fallback;
+          }
+        }
+
+        return new Response('Offline', {
+          status: 503,
+          statusText: 'Offline'
+        });
       }
 
-      return response || Response.error();
+      return response;
     })
   );
 });
