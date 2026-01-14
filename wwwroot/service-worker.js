@@ -40,37 +40,42 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  const cachedResponsePromise = caches.match(event.request);
-  const networkResponsePromise = fetch(event.request).catch(() => undefined);
+  const responsePromise = caches.match(event.request).then((cachedResponse) => {
+    if (cachedResponse) {
+      return { response: cachedResponse, fromCache: true };
+    }
+
+    return fetch(event.request)
+      .then((networkResponse) => ({
+        response: networkResponse,
+        fromCache: false
+      }))
+      .catch(() => ({ response: undefined, fromCache: false }));
+  });
 
   event.respondWith(
-    cachedResponsePromise.then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
+    responsePromise.then(({ response }) => {
+      if (!response && event.request.mode === 'navigate') {
+        return caches.match(`${APP_BASE}index.html`);
       }
 
-      return networkResponsePromise.then(
-        (networkResponse) =>
-          networkResponse || caches.match(`${APP_BASE}index.html`)
-      );
+      return response;
     })
   );
 
   event.waitUntil(
-    Promise.all([cachedResponsePromise, networkResponsePromise]).then(
-      ([cachedResponse, networkResponse]) => {
-        if (
-          !cachedResponse &&
-          networkResponse &&
-          networkResponse.status === 200 &&
-          networkResponse.type === 'basic'
-        ) {
-          return caches
-            .open(CACHE_NAME)
-            .then((cache) => cache.put(event.request, networkResponse.clone()));
-        }
-        return undefined;
+    responsePromise.then(({ response, fromCache }) => {
+      if (
+        !fromCache &&
+        response &&
+        response.status === 200 &&
+        response.type === 'basic'
+      ) {
+        return caches
+          .open(CACHE_NAME)
+          .then((cache) => cache.put(event.request, response.clone()));
       }
-    )
+      return undefined;
+    })
   );
 });
