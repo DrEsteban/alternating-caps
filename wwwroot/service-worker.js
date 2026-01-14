@@ -40,29 +40,37 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  const cachedResponsePromise = caches.match(event.request);
+  const networkResponsePromise = fetch(event.request).catch(() => undefined);
+
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    cachedResponsePromise.then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
 
-      return fetch(event.request)
-        .then((response) => {
-          if (
-            response &&
-            response.status === 200 &&
-            response.type === 'basic'
-          ) {
-            const responseToCache = response.clone();
-            event.waitUntil(
-              caches
-                .open(CACHE_NAME)
-                .then((cache) => cache.put(event.request, responseToCache))
-            );
-          }
-          return response;
-        })
-        .catch(() => caches.match(`${APP_BASE}index.html`));
+      return networkResponsePromise.then(
+        (networkResponse) =>
+          networkResponse || caches.match(`${APP_BASE}index.html`)
+      );
     })
+  );
+
+  event.waitUntil(
+    Promise.all([cachedResponsePromise, networkResponsePromise]).then(
+      ([cachedResponse, networkResponse]) => {
+        if (
+          !cachedResponse &&
+          networkResponse &&
+          networkResponse.status === 200 &&
+          networkResponse.type === 'basic'
+        ) {
+          return caches
+            .open(CACHE_NAME)
+            .then((cache) => cache.put(event.request, networkResponse.clone()));
+        }
+        return undefined;
+      }
+    )
   );
 });
