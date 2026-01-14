@@ -15,7 +15,7 @@ const CACHE_PATHS = ASSETS_TO_CACHE.map(
 );
 const INDEX_CACHE_PATH =
   CACHE_PATHS.find((path) => path.endsWith('index.html')) ||
-  `${APP_BASE}index.html`;
+  new URL(`${APP_BASE}index.html`, self.location.origin).pathname;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -55,50 +55,50 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  const responsePromise = caches.match(event.request).then((cachedResponse) => {
+  const responsePromise = (async () => {
+    const cachedResponse = await caches.match(event.request);
     if (cachedResponse) {
       return cachedResponse;
     }
 
-    const networkResponsePromise = fetch(event.request).catch((error) => {
+    let networkResponse = null;
+    try {
+      networkResponse = await fetch(event.request);
+    } catch (error) {
       console.error('Fetch failed for request:', event.request.url, error);
-      return null;
-    });
+      networkResponse = null;
+    }
 
-    event.waitUntil(
-      networkResponsePromise.then((response) => {
-        if (
-          response &&
-          response.status === 200 &&
-          response.type === 'basic'
-        ) {
-          const responseClone = response.clone();
-          return caches
-            .open(CACHE_NAME)
-            .then((cache) => cache.put(event.request, responseClone));
-        }
-        return null;
-      })
-    );
+    if (
+      networkResponse &&
+      networkResponse.status === 200 &&
+      networkResponse.type === 'basic'
+    ) {
+      const responseClone = networkResponse.clone();
+      event.waitUntil(
+        (async () => {
+          const cache = await caches.open(CACHE_NAME);
+          await cache.put(event.request, responseClone);
+        })()
+      );
+    }
 
-    return networkResponsePromise.then(async (networkResponse) => {
-      if (!networkResponse) {
-        if (event.request.mode === 'navigate') {
-          const fallback = await caches.match(INDEX_CACHE_PATH);
-          if (fallback) {
-            return fallback;
-          }
-        }
-
-        return new Response('This content is not available offline.', {
-          status: 503,
-          statusText: 'Offline'
-        });
-      }
-
+    if (networkResponse) {
       return networkResponse;
+    }
+
+    if (event.request.mode === 'navigate') {
+      const fallback = await caches.match(INDEX_CACHE_PATH);
+      if (fallback) {
+        return fallback;
+      }
+    }
+
+    return new Response('This content is not available offline.', {
+      status: 503,
+      statusText: 'Offline'
     });
-  });
+  })();
 
   event.respondWith(responsePromise);
 });
