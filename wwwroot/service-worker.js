@@ -40,33 +40,30 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  const url = new URL(event.request.url);
+  const shouldHandleRequest =
+    event.request.mode === 'navigate' ||
+    ASSETS_TO_CACHE.includes(url.pathname);
+
+  if (!shouldHandleRequest) {
+    return;
+  }
+
+  let servedFromCache = false;
+
   const responsePromise = caches.match(event.request).then((cachedResponse) => {
     if (cachedResponse) {
-      return { response: cachedResponse, fromCache: true };
+      servedFromCache = true;
+      return cachedResponse;
     }
 
-    return fetch(event.request)
-      .then((networkResponse) => ({
-        response: networkResponse,
-        fromCache: false
-      }))
-      .catch(() => ({ response: undefined, fromCache: false }));
+    return fetch(event.request).catch(() => undefined);
   });
 
-  event.respondWith(
-    responsePromise.then(({ response }) => {
-      if (!response && event.request.mode === 'navigate') {
-        return caches.match(`${APP_BASE}index.html`);
-      }
-
-      return response;
-    })
-  );
-
   event.waitUntil(
-    responsePromise.then(({ response, fromCache }) => {
+    responsePromise.then((response) => {
       if (
-        !fromCache &&
+        !servedFromCache &&
         response &&
         response.status === 200 &&
         response.type === 'basic'
@@ -76,6 +73,16 @@ self.addEventListener('fetch', (event) => {
           .then((cache) => cache.put(event.request, response.clone()));
       }
       return undefined;
+    })
+  );
+
+  event.respondWith(
+    responsePromise.then((response) => {
+      if (!response && event.request.mode === 'navigate') {
+        return caches.match(`${APP_BASE}index.html`);
+      }
+
+      return response;
     })
   );
 });
