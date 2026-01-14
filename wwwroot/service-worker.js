@@ -62,7 +62,7 @@ self.addEventListener('fetch', (event) => {
 
     const networkResponsePromise = fetch(event.request).catch((error) => {
       console.error('Fetch failed for request:', event.request.url, error);
-      return undefined;
+      return null;
     });
 
     event.waitUntil(
@@ -77,7 +77,7 @@ self.addEventListener('fetch', (event) => {
             .open(CACHE_NAME)
             .then((cache) => cache.put(event.request, responseClone));
         }
-        return undefined;
+        return null;
       })
     );
 
