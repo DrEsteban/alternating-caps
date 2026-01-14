@@ -36,8 +36,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  const { origin } = new URL(event.request.url);
-  if (origin !== self.location.origin) {
+  if (!event.request.url.startsWith(self.location.origin)) {
     return;
   }
 
@@ -55,9 +54,11 @@ self.addEventListener('fetch', (event) => {
             response.type === 'basic'
           ) {
             const responseToCache = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
+            event.waitUntil(
+              caches
+                .open(CACHE_NAME)
+                .then((cache) => cache.put(event.request, responseToCache))
+            );
           }
           return response;
         })
