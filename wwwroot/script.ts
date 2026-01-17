@@ -34,6 +34,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch((error) => {
+      console.error('Service worker registration failed:', error);
+    });
+  });
+}
+
 function alternateCaps(): void {
   const introduceRandomness = randomnessCheckbox.checked;
   // Hide the random options if randomness is not selected
