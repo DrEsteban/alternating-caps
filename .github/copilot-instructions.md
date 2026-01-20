@@ -1,108 +1,80 @@
-# Copilot Instructions for Alternating Caps Converter
+This is a TypeScript-based Progressive Web App (PWA) that converts text to alternating caps format (e.g., "hAvE yOu EvEr"). The app is a lightweight, frameworkless web application deployed to Azure Static Web Apps.
 
-## Project Overview
+## Code Standards
 
-This is a Progressive Web App (PWA) that converts text to alternating caps format (e.g., "hAvE yOu EvEr").
+### Required Before Each Commit
+- Ensure TypeScript compiles without errors: `tsc`
+- Verify the compiled `script.js` is generated in `wwwroot/`
+- Do not commit `script.js` (it's in `.gitignore` and rebuilt during deployment)
 
-## Technology Stack
+### Development Flow
+- **Build**: `tsc` (compiles TypeScript to JavaScript)
+- **No tests currently**: This project doesn't have automated tests yet
+- **Local development**: Open `wwwroot/index.html` in a browser or use a local web server
 
-- **Language**: TypeScript (ES2023 target)
-- **Runtime**: Browser (DOM environment)
-- **Build Tool**: TypeScript Compiler (tsc)
-- **Deployment**: Azure Static Web Apps
-- **No Framework**: Vanilla TypeScript with direct DOM manipulation
+## Repository Structure
 
-## Project Structure
-
-- `wwwroot/`: Contains all web assets
-  - `script.ts`: Main TypeScript source file
+- `wwwroot/`: All web assets (HTML, CSS, TypeScript, and compiled JS)
+  - `script.ts`: Main TypeScript source file (200+ lines)
   - `index.html`: Main HTML file
   - `style.css`: Styling
-  - `service-worker.js`: PWA service worker
+  - `service-worker.js`: PWA service worker for offline functionality
   - `manifest.webmanifest`: PWA manifest
-  - Images: `favicon.ico`, `icon-192.png`, `icon-512.png`
-- `tsconfig.json`: TypeScript configuration
-- `.github/workflows/`: CI/CD pipeline for Azure deployment
+  - `favicon.ico`, `icon-192.png`, `icon-512.png`: App icons
+- `tsconfig.json`: TypeScript configuration (ES2023 target, strict mode)
+- `.github/workflows/`: Azure Static Web Apps CI/CD pipeline
 
-## Building and Testing
+## Key Guidelines
 
-### Build Commands
+1. **Follow TypeScript strict mode**: All strict checks are enforced in `tsconfig.json`
+2. **Use explicit type annotations**: Functions should have typed parameters and return types
+3. **Maintain frameworkless architecture**: No frameworks - use vanilla TypeScript with direct DOM manipulation
+4. **Preserve PWA functionality**: Maintain service worker, manifest, and offline capabilities
+5. **Keep settings backward compatible**: Settings are stored in localStorage with versioned keys (`settings-${version}`)
+6. **Use modern browser APIs**: Leverage async/await, clipboard API, and other modern features
+7. **Cache DOM elements**: Retrieve and cache elements in global variables during `DOMContentLoaded`
+8. **Validate user input**: Ensure inputs like random ratio stay within valid bounds (0-100)
 
-```bash
-# Install TypeScript globally
-npm install -g typescript
+## Code Conventions
 
-# Compile TypeScript to JavaScript
-tsc
-```
+### TypeScript Patterns
 
-The TypeScript compiler generates `script.js` from `script.ts` in the `wwwroot/` directory.
-
-### Deployment
-
-The project uses Azure Static Web Apps for hosting. The CI/CD workflow:
-1. Compiles TypeScript with `tsc`
-2. Copies web assets (HTML, JS, CSS, images, manifest) to a publish directory
-3. Deploys to Azure Static Web Apps
-
-## Code Style and Conventions
-
-### TypeScript
-
-- **Strict mode enabled**: All TypeScript strict checks are enforced
-- **Type annotations**: Use explicit type annotations for function parameters and return types
-- **ES Modules**: Use `esModuleInterop` for module compatibility
-- **No comments in output**: Comments are removed during compilation (`removeComments: true`)
-
-### DOM Manipulation
-
-- Use direct DOM API calls with type assertions
-- Cache DOM elements in global variables after `DOMContentLoaded`
-- Example pattern:
+- Use `var` for global variables (not `let` or `const`) that are initialized after `DOMContentLoaded`
+- Use explicit type assertions when getting DOM elements: `document.getElementById('id') as HTMLInputElement`
+- Example DOM caching pattern:
   ```typescript
-  var elementName: HTMLElementType;
+  var capitalCheckbox: HTMLInputElement;
   document.addEventListener('DOMContentLoaded', () => {
-    elementName = document.getElementById('id') as HTMLElementType;
+    capitalCheckbox = document.getElementById('capitalCheckbox') as HTMLInputElement;
   });
   ```
 
 ### Function Naming
 
-- Use descriptive camelCase names
-- Prefer simple, clear function names that describe actions
-- Example: `alternateCaps()`, `saveSettings()`, `copyToClipboard()`
+- Use descriptive camelCase: `alternateCaps()`, `saveSettings()`, `copyToClipboard()`
+- Name functions clearly to describe their action
 
-### Local Storage
+### Settings Persistence
 
-- Store settings in localStorage with versioned keys
-- Format: `settings-${version}`
-- Always serialize/deserialize using JSON
+- Settings are stored as JSON in localStorage
+- Use type-safe deserialization: `const parsedSettings: Settings = JSON.parse(settings)`
+- Settings type: `{ capital: boolean, randomness: boolean, randomRatio: string }`
 
-### Service Worker
+## Core Algorithm Details
 
-- PWA service worker registration is handled in `script.ts`
-- Register service worker on window load event
+The alternating caps algorithm has important implementation details:
 
-## Features to Preserve
+- **Non-letter characters** (spaces, punctuation) don't count toward alternation
+- **Letter counter** only increments for actual letters (using `/[a-zA-Z]/.test(char)`)
+- **Randomness feature** allows controlled case flipping based on a 0-100% ratio
+- **First letter handling** has special logic when randomness is enabled
+- **Case alternation** uses modulo logic: `(j % 2 === 0) === startWithCapital`
 
-1. **Alternating caps conversion**: Core algorithm that alternates letter case
-2. **Settings persistence**: Save user preferences (capital start, randomness, ratio) in localStorage
-3. **Randomness option**: Allow controlled randomization of case alternation
-4. **Copy to clipboard**: Output text can be copied with visual feedback
-5. **PWA functionality**: App is installable and works offline
+## Important Features to Preserve
 
-## Development Guidelines
-
-- Keep the app lightweight and simple
-- Maintain PWA functionality (manifest, service worker, icons)
-- Preserve backward compatibility with stored settings
-- Use modern browser APIs (async/await, clipboard API)
-- Handle edge cases (non-letter characters, empty input)
-- Validate user input (e.g., random ratio bounds 0-100)
-
-## Important Implementation Details
-
-- **Non-letter characters**: Don't count towards alternation (spaces, punctuation, etc.)
-- **Counter logic**: Only increment letter counter for actual letters
-- **Randomness**: Applied per letter based on ratio (0-100%)
-- **First letter handling**: Special case when randomness is enabled
+1. Alternating caps conversion algorithm
+2. Settings persistence in localStorage
+3. Randomness option with configurable ratio
+4. Copy to clipboard with visual feedback (tooltip)
+5. PWA installability and offline functionality
+6. Service worker registration on window load
