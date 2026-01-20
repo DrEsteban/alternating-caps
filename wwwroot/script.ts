@@ -31,6 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
     capitalCheckbox.checked = parsedSettings.capital;
     randomnessCheckbox.checked = parsedSettings.randomness;
     randomRatioBox.value = parsedSettings.randomRatio;
+    // Update UI to reflect loaded settings
+    alternateCaps();
   }
 });
 
