@@ -15,7 +15,7 @@ This is a TypeScript-based Progressive Web App (PWA) that converts text to alter
 ## Repository Structure
 
 - `wwwroot/`: All web assets (HTML, CSS, TypeScript, and compiled JS)
-  - `script.ts`: Main TypeScript source file (200+ lines)
+  - `script.ts`: Main TypeScript source file (~130 lines)
   - `index.html`: Main HTML file
   - `style.css`: Styling
   - `service-worker.js`: PWA service worker for offline functionality
@@ -39,7 +39,7 @@ This is a TypeScript-based Progressive Web App (PWA) that converts text to alter
 
 ### TypeScript Patterns
 
-- Use `var` for global variables (not `let` or `const`) that are initialized after `DOMContentLoaded`
+- Global variables use `var` (matching existing codebase pattern) and are initialized after `DOMContentLoaded`
 - Use explicit type assertions when getting DOM elements: `document.getElementById('id') as HTMLInputElement`
 - Example DOM caching pattern:
   ```typescript
