@@ -1,4 +1,4 @@
-const CACHE_NAME = 'alternating-caps-cache-v1';
+const CACHE_NAME = 'alternating-caps-cache-v2';
 const APP_BASE = self.location.pathname.replace(/service-worker\.js$/, '');
 const ASSETS_TO_CACHE = [
   APP_BASE,
